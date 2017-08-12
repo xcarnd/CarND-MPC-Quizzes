@@ -56,6 +56,12 @@ class FG_eval {
     // Any additions to the cost should be added to `fg[0]`.
     fg[0] = 0;
 
+    for (int t = 0; t < N; t++) {
+      fg[0] += (vars[cte_start + t] * vars[cte_start + t]);
+      fg[0] += (vars[epsi_start + t] * vars[epsi_start + t]);
+    }
+
+
     // Reference State Cost
     // TODO: Define the cost related the reference state and
     // any anything you think may be beneficial.
@@ -104,16 +110,13 @@ class FG_eval {
       fg[1 + psi_start + t] = psi1 - (psi0 + v0 / Lf * delta0 * dt);
       fg[1 + v_start + t] = v1 - (v0 + a0 * dt);
 
-      auto y_p = coeffs(3) * CppAD::pow(x1, 3) + coeffs(2) * CppAD::pow(x1, 2) + coeffs(1) * x1 + coeffs(0);
-      auto psi_p = CppAD::atan(3 * coeffs(3) * CppAD::pow(x1, 2) + 2 * coeffs(2) * x1 + coeffs(1));
-      auto cte = y1 - y_p;
-      auto epsi = psi1 - psi_p;
+      auto y_p = coeffs(3) * CppAD::pow(x0, 3) + coeffs(2) * CppAD::pow(x0, 2) + coeffs(1) * x0 + coeffs(0);
+      auto psi_p = CppAD::atan(3 * coeffs(3) * CppAD::pow(x0, 2) + 2 * coeffs(2) * x0 + coeffs(1));
+      auto cte = y0 - y_p;
+      auto epsi = psi0 - psi_p;
 
       fg[1 + cte_start + t] = vars[cte_start + t] - cte;
       fg[1 + epsi_start + t] = vars[epsi_start + t] - epsi;
-
-      fg[0] += (cte * cte);
-      fg[0] += (epsi * epsi);
     }
   }
 };
